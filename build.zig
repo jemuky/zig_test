@@ -20,7 +20,7 @@ pub fn build(b: *std.Build) !void {
         .name = "z_test",
         // In this case the main source file is merely a path, however, in more\
         // complicated build scripts, this could be a generated file.
-        .root_source_file = .{ .path = "src/main_mongo.zig" },
+        .root_source_file = .{ .path = "src/main_static_lib.zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -29,7 +29,8 @@ pub fn build(b: *std.Build) !void {
     // linkFFMPEG(exe);
     // linkMysql(exe);
     // linkRedis(exe);
-    linkMongo(exe);
+    // linkMongo(exe);
+    linkStaticLib(exe);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -145,4 +146,15 @@ fn linkMongo(exe: *std.Build.Step.Compile) void {
 
     exe.linkSystemLibrary("mongoc-static-1.0");
     // exe.linkSystemLibrary("bson-static-1.0");
+}
+
+// 静态链接
+fn linkStaticLib(exe: *std.Build.Step.Compile) void {
+    exe.addIncludePath(std.Build.LazyPath{
+        .path = ".",
+    });
+
+    exe.addObjectFile(std.Build.LazyPath{
+        .path = "sl.lib",
+    });
 }
