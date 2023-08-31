@@ -64,6 +64,7 @@ pub fn main() !u8 {
 
         row = mysql.mysql_fetch_row(result);
     }
+    debug("suc!", .{});
 
     return 0;
 }

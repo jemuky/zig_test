@@ -15,22 +15,10 @@ fn fail_func2() Err!i32 {
 const print = std.debug.print;
 
 test "buf" {
-    var f1 = std.fs.cwd().makeOpenPath("frame", .{}) catch @panic("makeOpenPath failed");
-    var f = if (f1.openFile("frame-1.pgm", std.fs.File.OpenFlags{ .mode = .read_write })) |data| blk: {
-        break :blk data;
-    } else |e| blk: {
-        if (e != error.FileNotFound) {
-            @panic("openFile failed");
-        } else {
-            break :blk f1.createFile("frame-1.pgm", .{}) catch @panic("createFile failed");
-        }
-    };
-    var buf: [18]u8 = undefined;
-    if (f.read(&buf)) |_| {} else |err| {
-        print("read failed, err={}", .{err});
-        return;
-    }
-    print("buf={s}\n", .{buf});
+    const a = [3]u8{ 1, 2, 3 };
+    const b = [_:5]u8{ 1, 2, 3 };
+    const @"a b c hello world" = "asdbadferew cccccc";
+    print("buf={s}, a={any}, b={any}\n", .{ @"a b c hello world", a, b[3] });
 }
 pub inline fn min(a: i32, b: i32) i32 {
     return comptime if (a < b) a else b;

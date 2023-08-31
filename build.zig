@@ -1,4 +1,5 @@
 const std = @import("std");
+const LazyPath = std.Build.LazyPath;
 // const ffmpeg = @import("libs/ffmpeg/build.zig");
 
 // Although this function looks imperative, note that its job is to
@@ -20,7 +21,7 @@ pub fn build(b: *std.Build) !void {
         .name = "z_test",
         // In this case the main source file is merely a path, however, in more\
         // complicated build scripts, this could be a generated file.
-        .root_source_file = .{ .path = "src/main_static_lib.zig" },
+        .root_source_file = .{ .path = "src/main_zip.zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -29,8 +30,9 @@ pub fn build(b: *std.Build) !void {
     // linkFFMPEG(exe);
     // linkMysql(exe);
     // linkRedis(exe);
+    // linkStaticLib(exe);
     // linkMongo(exe);
-    linkStaticLib(exe);
+    linkZip(exe);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -107,7 +109,7 @@ fn linkMysql(exe: *std.Build.Step.Compile) void {
 
     // 引入动态库需要这样
     exe.linkSystemLibrary("libmysql");
-    // 引入静态库会产生和系统的符号重复的问题
+    // 引入静态库会产生和系统的符号重复的问题，可以不引libc，不过需要什么系统库再引
     // lld-link: duplicate symbol: atexit
 }
 
@@ -124,6 +126,7 @@ fn linkRedis(exe: *std.Build.Step.Compile) void {
     exe.linkSystemLibrary("hiredis");
 }
 
+// mongo比较麻烦，可以先用c绑定，再用zig调用
 fn linkMongo(exe: *std.Build.Step.Compile) void {
     exe.addSystemIncludePath(std.Build.LazyPath{
         .path = "D:\\psoft\\mongo\\src\\libmongoc\\src",
@@ -131,21 +134,27 @@ fn linkMongo(exe: *std.Build.Step.Compile) void {
     exe.addSystemIncludePath(std.Build.LazyPath{
         .path = "D:\\psoft\\mongo\\src\\libbson\\src",
     });
+    exe.addSystemIncludePath(std.Build.LazyPath{
+        .path = "D:\\psoft\\mongo\\out\\src\\libbson\\src",
+    });
+    exe.addSystemIncludePath(std.Build.LazyPath{
+        .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\src\\mongoc",
+    });
     exe.addLibraryPath(std.Build.LazyPath{
         .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\Release",
     });
     exe.addLibraryPath(std.Build.LazyPath{
         .path = "D:\\psoft\\mongo\\out\\src\\libbson\\Release",
     });
-    exe.addObjectFile(std.Build.LazyPath{
-        .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\Release\\mongoc-static-1.0.lib",
-    });
-    exe.addObjectFile(std.Build.LazyPath{
-        .path = "D:\\psoft\\mongo\\out\\src\\libbson\\Release\\bson-static-1.0.lib",
-    });
+    // exe.addObjectFile(std.Build.LazyPath{
+    //     .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\Release\\mongoc-static-1.0.lib",
+    // });
+    // exe.addObjectFile(std.Build.LazyPath{
+    //     .path = "D:\\psoft\\mongo\\out\\src\\libbson\\Release\\bson-static-1.0.lib",
+    // });
 
-    exe.linkSystemLibrary("mongoc-static-1.0");
-    // exe.linkSystemLibrary("bson-static-1.0");
+    exe.linkSystemLibrary("mongoc-1.0");
+    exe.linkSystemLibrary("bson-1.0");
 }
 
 // 静态链接
@@ -157,4 +166,15 @@ fn linkStaticLib(exe: *std.Build.Step.Compile) void {
     exe.addObjectFile(std.Build.LazyPath{
         .path = "sl.lib",
     });
+}
+
+// https://github.com/kuba--/zip
+fn linkZip(exe: *std.Build.Step.Compile) void {
+    exe.addIncludePath(LazyPath{
+        .path = "D:\\space\\scode\\zip\\src",
+    });
+    exe.addLibraryPath(std.Build.LazyPath{
+        .path = "D:\\space\\scode\\zip\\build\\Release",
+    });
+    exe.linkSystemLibrary("zip");
 }
