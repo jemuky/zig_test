@@ -10,7 +10,10 @@ const z = @cImport({
 
 pub fn main() !u8 {
     // return default_compression();
-    return extract();
+    // return extract();
+    var i: i32 = 1234;
+    debug("ctn={any}\n", .{@typeInfo(@TypeOf(i))});
+    return 0;
 }
 
 fn cint_to_u8(cint: c_int) u8 {

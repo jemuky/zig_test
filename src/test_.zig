@@ -15,10 +15,12 @@ fn fail_func2() Err!i32 {
 const print = std.debug.print;
 
 test "buf" {
-    const a = [3]u8{ 1, 2, 3 };
-    const b = [_:5]u8{ 1, 2, 3 };
+    // const a = [3]u8{ 1, 2, 3 };
+    const b = [_:5]u8{ 1, 2, 5, 3 };
+    // var i: i32 = 1234;
+    // const c = @alignOf(@TypeOf(i));
     const @"a b c hello world" = "asdbadferew cccccc";
-    print("buf={s}, a={any}, b={any}\n", .{ @"a b c hello world", a, b[3] });
+    print("buf={s}, b={any}\n", .{ @"a b c hello world", b });
 }
 pub inline fn min(a: i32, b: i32) i32 {
     return comptime if (a < b) a else b;
