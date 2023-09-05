@@ -127,34 +127,9 @@ fn linkRedis(exe: *std.Build.Step.Compile) void {
 }
 
 // mongo比较麻烦，可以先用c绑定，再用zig调用
+// mongo-c-driver: https://github.com/mongodb/mongo-c-driver
 fn linkMongo(exe: *std.Build.Step.Compile) void {
-    exe.addSystemIncludePath(std.Build.LazyPath{
-        .path = "D:\\psoft\\mongo\\src\\libmongoc\\src",
-    });
-    exe.addSystemIncludePath(std.Build.LazyPath{
-        .path = "D:\\psoft\\mongo\\src\\libbson\\src",
-    });
-    exe.addSystemIncludePath(std.Build.LazyPath{
-        .path = "D:\\psoft\\mongo\\out\\src\\libbson\\src",
-    });
-    exe.addSystemIncludePath(std.Build.LazyPath{
-        .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\src\\mongoc",
-    });
-    exe.addLibraryPath(std.Build.LazyPath{
-        .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\Release",
-    });
-    exe.addLibraryPath(std.Build.LazyPath{
-        .path = "D:\\psoft\\mongo\\out\\src\\libbson\\Release",
-    });
-    // exe.addObjectFile(std.Build.LazyPath{
-    //     .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\Release\\mongoc-static-1.0.lib",
-    // });
-    // exe.addObjectFile(std.Build.LazyPath{
-    //     .path = "D:\\psoft\\mongo\\out\\src\\libbson\\Release\\bson-static-1.0.lib",
-    // });
-
-    exe.linkSystemLibrary("mongoc-1.0");
-    exe.linkSystemLibrary("bson-1.0");
+    _ = exe;
 }
 
 // 静态链接
