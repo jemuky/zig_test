@@ -21,7 +21,7 @@ pub fn build(b: *std.Build) !void {
         .name = "z_test",
         // In this case the main source file is merely a path, however, in more\
         // complicated build scripts, this could be a generated file.
-        .root_source_file = .{ .path = "src/main_zip.zig" },
+        .root_source_file = .{ .path = "src/main_curl.zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -32,7 +32,8 @@ pub fn build(b: *std.Build) !void {
     // linkRedis(exe);
     // linkStaticLib(exe);
     // linkMongo(exe);
-    linkZip(exe);
+    // linkZip(exe);
+    linkCurl(exe);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -79,8 +80,8 @@ pub fn build(b: *std.Build) !void {
     test_step.dependOn(&run_unit_tests.step);
 }
 
-// 在此外还需拷入ffmpeg的bin下的dll文件，如avcodec-60.dll等
-// 直接下载编译好的：http://ffmpeg.org/download.html，选择windows版本
+/// 在此外还需拷入ffmpeg的bin下的dll文件，如avcodec-60.dll等
+/// 直接下载编译好的：http://ffmpeg.org/download.html，选择windows版本
 fn linkFFMPEG(exe: *std.Build.Step.Compile) void {
     exe.addSystemIncludePath(std.Build.LazyPath{
         .path = "D:\\program\\ffmpeg\\ffmpeg-shared\\include",
@@ -96,8 +97,8 @@ fn linkFFMPEG(exe: *std.Build.Step.Compile) void {
     exe.linkSystemLibrary("swresample");
 }
 
-// 此外还需拷入libmysql.dll
-// 安装mysql-svr
+/// 此外还需拷入libmysql.dll
+/// 安装mysql-svr
 fn linkMysql(exe: *std.Build.Step.Compile) void {
     exe.addSystemIncludePath(std.Build.LazyPath{
         .path = "D:\\program\\mysql-8.0.34-winx64\\include",
@@ -113,8 +114,8 @@ fn linkMysql(exe: *std.Build.Step.Compile) void {
     // lld-link: duplicate symbol: atexit
 }
 
-// 此外还需拷入hiredis.dll
-// hiredis: https://github.com/redis/hiredis.git
+/// 此外还需拷入hiredis.dll
+/// hiredis: https://github.com/redis/hiredis.git
 fn linkRedis(exe: *std.Build.Step.Compile) void {
     exe.addSystemIncludePath(std.Build.LazyPath{
         .path = "D:\\space\\scode\\hiredis",
@@ -126,13 +127,39 @@ fn linkRedis(exe: *std.Build.Step.Compile) void {
     exe.linkSystemLibrary("hiredis");
 }
 
-// mongo比较麻烦，可以先用c绑定，再用zig调用
-// mongo-c-driver: https://github.com/mongodb/mongo-c-driver
+/// mongo比较麻烦，可以先用c实现方法，再用zig调用
+/// mongo-c-driver: https://github.com/mongodb/mongo-c-driver
 fn linkMongo(exe: *std.Build.Step.Compile) void {
-    _ = exe;
+    exe.addSystemIncludePath(std.Build.LazyPath{
+        .path = "D:\\psoft\\mongo\\src\\libmongoc\\src",
+    });
+    exe.addSystemIncludePath(std.Build.LazyPath{
+        .path = "D:\\psoft\\mongo\\src\\libbson\\src",
+    });
+    exe.addSystemIncludePath(std.Build.LazyPath{
+        .path = "D:\\psoft\\mongo\\out\\src\\libbson\\src",
+    });
+    exe.addSystemIncludePath(std.Build.LazyPath{
+        .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\src\\mongoc",
+    });
+    exe.addLibraryPath(std.Build.LazyPath{
+        .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\Release",
+    });
+    exe.addLibraryPath(std.Build.LazyPath{
+        .path = "D:\\psoft\\mongo\\out\\src\\libbson\\Release",
+    });
+    // exe.addObjectFile(std.Build.LazyPath{
+    //     .path = "D:\\psoft\\mongo\\out\\src\\libmongoc\\Release\\mongoc-static-1.0.lib",
+    // });
+    // exe.addObjectFile(std.Build.LazyPath{
+    //     .path = "D:\\psoft\\mongo\\out\\src\\libbson\\Release\\bson-static-1.0.lib",
+    // });
+
+    exe.linkSystemLibrary("mongoc-1.0");
+    exe.linkSystemLibrary("bson-1.0");
 }
 
-// 静态链接
+/// 静态链接
 fn linkStaticLib(exe: *std.Build.Step.Compile) void {
     exe.addIncludePath(std.Build.LazyPath{
         .path = ".",
@@ -143,7 +170,7 @@ fn linkStaticLib(exe: *std.Build.Step.Compile) void {
     });
 }
 
-// https://github.com/kuba--/zip
+/// https://github.com/kuba--/zip
 fn linkZip(exe: *std.Build.Step.Compile) void {
     exe.addIncludePath(LazyPath{
         .path = "D:\\space\\scode\\zip\\src",
@@ -152,4 +179,26 @@ fn linkZip(exe: *std.Build.Step.Compile) void {
         .path = "D:\\space\\scode\\zip\\build\\Release",
     });
     exe.linkSystemLibrary("zip");
+}
+
+/// https://curl.se/libcurl/
+/// 在上面链接的下载页下载编译好的lib
+/// 注意：这里需要libcurl-x64.dll(下载的bin目录下)在根目录，看起来某个静态库链接了这个动态库(知道这个关系通过dumpbin /dependents [此项目编译后文件exe]或者ldd)
+/// 看起来上面的都不需要增加addLibraryPath，而静态链接库只能放在项目目录下，动态链接库只能放在项目根目录下或环境变量path中
+fn linkCurl(exe: *std.Build.Step.Compile) void {
+    exe.addSystemIncludePath(.{
+        .path = "D:\\space\\scode\\lib_curl-mingw\\include",
+    });
+    exe.addObjectFile(.{ .path = "curl_lib/libbrotlicommon.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libbrotlidec.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libcrypto.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libcurl.dll.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libnghttp2.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libnghttp3.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libngtcp2.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libngtcp2_crypto_quictls.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libssh2.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libssl.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libz.a" });
+    exe.addObjectFile(.{ .path = "curl_lib/libzstd.a" });
 }
