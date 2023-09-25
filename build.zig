@@ -211,9 +211,6 @@ fn linkGlfw(exe: *std.Build.Step.Compile) void {
     exe.addIncludePath(LazyPath{
         .path = "glfw_inc",
     });
-    exe.addIncludePath(LazyPath{
-        .path = "src",
-    });
     exe.addObjectFile(.{ .path = "glfw_lib/glfw3.lib" });
     exe.linkSystemLibrary("opengl32");
     exe.linkSystemLibrary("KERNEL32");
