@@ -1,0 +1,26 @@
+---
+Language: Proto
+BasedOnStyle: Google
+ColumnLimit: 150
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+---
+# From https://git.code.oa.com/standards/cpp/tree/master/format
+Language: Cpp
+BasedOnStyle: Google
+ColumnLimit: 100
+
+# 自动识别代码中的指针对齐方式，如果希望强制统一，则可以改为 false
+DerivePointerAlignment: true
+
+# 默认对齐到类型名
+PointerAlignment: Left
+
+# Only sort headers in each include block
+SortIncludes: true
+IncludeBlocks: Preserve
+
+# 缩进长度
+IndentWidth: 4
+---
+

@@ -21,7 +21,7 @@ pub fn build(b: *std.Build) !void {
         .name = "z_test",
         // In this case the main source file is merely a path, however, in more\
         // complicated build scripts, this could be a generated file.
-        .root_source_file = .{ .path = "src/main_curl.zig" },
+        .root_source_file = .{ .path = "src/main_glfw.cpp" },
         .target = target,
         .optimize = optimize,
     });
@@ -33,7 +33,8 @@ pub fn build(b: *std.Build) !void {
     // linkStaticLib(exe);
     // linkMongo(exe);
     // linkZip(exe);
-    linkCurl(exe);
+    // linkCurl(exe);
+    linkGlfw(exe);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -201,4 +202,22 @@ fn linkCurl(exe: *std.Build.Step.Compile) void {
     exe.addObjectFile(.{ .path = "curl_lib/libssl.a" });
     exe.addObjectFile(.{ .path = "curl_lib/libz.a" });
     exe.addObjectFile(.{ .path = "curl_lib/libzstd.a" });
+}
+
+/// 使用zig调用时g.gladLoadGLLoader(&g.glfwGetProcAddress)总是返回非0，使用c调用这个再供zig调用也是
+/// 故改为使用cpp调用
+fn linkGlfw(exe: *std.Build.Step.Compile) void {
+    exe.addCSourceFiles(&[_][]const u8{"src/glad.c"}, &[_][]const u8{});
+    exe.addIncludePath(LazyPath{
+        .path = "glfw_inc",
+    });
+    exe.addIncludePath(LazyPath{
+        .path = "src",
+    });
+    exe.addObjectFile(.{ .path = "glfw_lib/glfw3.lib" });
+    exe.linkSystemLibrary("opengl32");
+    exe.linkSystemLibrary("KERNEL32");
+    exe.linkSystemLibrary("user32");
+    exe.linkSystemLibrary("gdi32");
+    exe.linkSystemLibrary("shell32");
 }

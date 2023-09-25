@@ -1,6 +1,6 @@
 @echo off
 
-zig build -freference-trace -Dtarget=native-native-gnu
+zig build -freference-trace -Dtarget=native-native-msvc
 @REM -Dtarget=native-native-gnu
 if %ERRORLEVEL% neq 0 (
     @echo build failed
