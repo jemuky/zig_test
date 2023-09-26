@@ -27,6 +27,7 @@ pub fn build(b: *std.Build) !void {
     });
 
     exe.linkLibC();
+    // exe.linkLibCpp();
     // linkFFMPEG(exe);
     // linkMysql(exe);
     // linkRedis(exe);
@@ -206,6 +207,7 @@ fn linkCurl(exe: *std.Build.Step.Compile) void {
 
 /// 使用zig调用时g.gladLoadGLLoader(&g.glfwGetProcAddress)总是返回非0，使用c调用这个再供zig调用也是
 /// 故改为使用cpp调用
+/// 此处只能用msvc，否则找不到msvcrt-os.lib下的sprintf_s函数
 fn linkGlfw(exe: *std.Build.Step.Compile) void {
     exe.addCSourceFiles(&[_][]const u8{"src/glad.c"}, &[_][]const u8{});
     exe.addIncludePath(LazyPath{
