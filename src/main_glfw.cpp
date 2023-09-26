@@ -1,13 +1,14 @@
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
-#include <iostream>
+#include <stdio.h>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 int main() {
-    using namespace std;
-    cout << "hello" << endl;
+    // using namespace std;
+    // cout << "hello" << endl;
+    printf("world\n");
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -15,7 +16,8 @@ int main() {
 
     GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
     if (window == NULL) {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        // std::cout << "Failed to create GLFW window" << std::endl;
+        printf("Failed to create GLFW window\n");
         glfwTerminate();
         return -1;
     }
@@ -24,7 +26,8 @@ int main() {
 
     // init glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to initialize GLAD" << std::endl;
+        // std::cout << "Failed to initialize GLAD" << std::endl;
+        printf("Failed to initialize GLAD\n");
         return -1;
     }
 
