@@ -5,13 +5,14 @@ const warn = std.log.warn;
 const err = std.log.err;
 const alloc = std.heap.page_allocator;
 const mysql = @cImport({
+    @cDefine("MIDL_INTERFACE", "struct");
     @cInclude("mysql.h");
 });
 
 pub fn main() !u8 {
     debug("mysql_init", .{});
     debug("client version={s}", .{mysql.mysql_get_client_info()});
-    var conn = mysql.mysql_init(null);
+    const conn = mysql.mysql_init(null);
 
     if (conn == null) {
         err("mysql_init failed, {s}", .{mysql.mysql_error(conn)});
@@ -31,11 +32,11 @@ pub fn main() !u8 {
         err("mysql use database failed, {s}", .{mysql.mysql_error(conn)});
         return 1;
     }
-    // if (mysql.mysql_query(conn, "CREATE TABLE cars(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), price INT)") > 0) {
-    //     err("mysql create table failed, {s}", .{mysql.mysql_error(conn)});
-    //     return 1;
-    // }
-    // debug("create cars suc", .{});
+    if (mysql.mysql_query(conn, "CREATE TABLE IF NOT EXISTS cars(id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), price INT)") > 0) {
+        err("mysql create table failed, {s}", .{mysql.mysql_error(conn)});
+        return 1;
+    }
+    debug("create cars suc", .{});
 
     if (mysql.mysql_query(conn, "INSERT INTO cars(name, price) VALUES('Baoma', 52542)") > 0) {
         err("mysql insert failed, {s}", .{mysql.mysql_error(conn)});

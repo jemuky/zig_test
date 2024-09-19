@@ -56,7 +56,7 @@ pub fn main() !u8 {
     var p_codec_param: *ffmpeg.AVCodecParameters = undefined;
     var video_stream_index: ?usize = null;
     for (0..ctx.*.nb_streams) |i| {
-        var pLocalCodecParameters: *ffmpeg.AVCodecParameters = ctx.*.streams[i].*.codecpar;
+        const pLocalCodecParameters: *ffmpeg.AVCodecParameters = ctx.*.streams[i].*.codecpar;
         debug("AVStream.time_base before open coded {}/{}", .{ ctx.*.streams[i].*.time_base.num, ctx.*.streams[i].*.time_base.den });
         debug("AVStream.r_frame_rate before open coded {}/{}", .{ ctx.*.streams[i].*.r_frame_rate.num, ctx.*.streams[i].*.r_frame_rate.den });
         debug("AVStream.start_time {}", .{ctx.*.streams[i].*.start_time});
@@ -64,7 +64,7 @@ pub fn main() !u8 {
 
         debug("finding the proper decoder (CODEC)", .{});
 
-        var pLocalCodec = ffmpeg.avcodec_find_decoder(pLocalCodecParameters.*.codec_id);
+        const pLocalCodec = ffmpeg.avcodec_find_decoder(pLocalCodecParameters.*.codec_id);
         if (pLocalCodec == null) {
             err("ERROR unsupported codec!\n", .{});
             continue;

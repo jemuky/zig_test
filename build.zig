@@ -21,7 +21,7 @@ pub fn build(b: *std.Build) !void {
         .name = "z_test",
         // In this case the main source file is merely a path, however, in more\
         // complicated build scripts, this could be a generated file.
-        .root_source_file = .{ .path = "src/main_glfw.cpp" },
+        .root_source_file = b.path("src/main_mysql.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -29,13 +29,13 @@ pub fn build(b: *std.Build) !void {
     exe.linkLibC();
     // exe.linkLibCpp();
     // linkFFMPEG(exe);
-    // linkMysql(exe);
+    linkMysql(exe);
     // linkRedis(exe);
     // linkStaticLib(exe);
     // linkMongo(exe);
     // linkZip(exe);
     // linkCurl(exe);
-    linkGlfw(exe);
+    // linkGlfw(exe);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -68,7 +68,7 @@ pub fn build(b: *std.Build) !void {
     // Creates a step for unit testing. This only builds the test executable
     // but does not run it.
     const unit_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/test_.zig" },
+        .root_source_file = b.path("src/test_.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -102,13 +102,9 @@ fn linkFFMPEG(exe: *std.Build.Step.Compile) void {
 /// 此外还需拷入libmysql.dll
 /// 安装mysql-svr
 fn linkMysql(exe: *std.Build.Step.Compile) void {
-    exe.addSystemIncludePath(std.Build.LazyPath{
-        .path = "D:\\program\\mysql-8.0.34-winx64\\include",
-    });
+    exe.addSystemIncludePath(LazyPath{ .cwd_relative = "D:\\program\\mysql-8.0.34-winx64\\include" });
 
-    exe.addLibraryPath(std.Build.LazyPath{
-        .path = "D:\\program\\mysql-8.0.34-winx64\\lib",
-    });
+    exe.addLibraryPath(LazyPath{ .cwd_relative = "D:\\program\\mysql-8.0.34-winx64\\lib" });
 
     // 引入动态库需要这样
     exe.linkSystemLibrary("libmysql");

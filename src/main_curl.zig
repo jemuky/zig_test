@@ -13,7 +13,7 @@ pub fn main() !void {
     _ = std.os.windows.kernel32.SetConsoleOutputCP(65001);
     debug("version_info={s}", .{c.curl_version()});
 
-    var curl = c.curl_easy_init();
+    const curl = c.curl_easy_init();
     if (curl == null) {
         err("curl_easy_init failed", .{});
         return;
@@ -30,7 +30,7 @@ pub fn main() !void {
     // code = c.curl_easy_setopt(curl, c.CURLOPT_WRITEDATA, buf);
     // warn("curl_easy_setopt3 code={}", .{code});
 
-    var res = c.curl_easy_perform(curl);
+    const res = c.curl_easy_perform(curl);
     if (res != c.CURLE_OK) err("curl_easy_perform failed, err={s}", .{c.curl_easy_strerror(res)});
     // warn("buf={s}", .{buf});
     debug("success", .{});

@@ -11,7 +11,7 @@ const z = @cImport({
 pub fn main() !u8 {
     // return default_compression();
     // return extract();
-    var i: i32 = 1234;
+    const i: i32 = 1234;
     debug("ctn={any}\n", .{@typeInfo(@TypeOf(i))});
     return 0;
 }
@@ -23,7 +23,7 @@ fn cint_to_u8(cint: c_int) u8 {
 fn default_compression() !u8 {
     var ret: c_int = 0;
 
-    var zip = z.zip_open("foo.zip", z.ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
+    const zip = z.zip_open("foo.zip", z.ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
     defer z.zip_close(zip);
 
     debug("zip == null? {}", .{zip == null});
@@ -35,7 +35,7 @@ fn default_compression() !u8 {
         defer dir.close();
         return cint_to_u8(ret);
     }
-    var buf = "some data here...";
+    const buf = "some data here...";
     ret = z.zip_entry_write(zip, buf, buf.len);
     if (ret != 0) {
         err("zip_entry_write failed: {}", .{ret});
@@ -78,7 +78,7 @@ fn extract() !u8 {
         }
     };
     var opq: usize = 2;
-    var arg = @as(*anyopaque, @alignCast(@ptrCast(&opq)));
+    const arg = @as(*anyopaque, @alignCast(@ptrCast(&opq)));
     _ = z.zip_extract("foo.zip", "foo", ts.on_extract_entry, arg);
     return 0;
 }

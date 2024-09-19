@@ -19,7 +19,7 @@ pub fn main() u8 {
     g.glfwWindowHint(g.GLFW_CONTEXT_VERSION_MINOR, 3);
     g.glfwWindowHint(g.GLFW_OPENGL_PROFILE, g.GLFW_OPENGL_CORE_PROFILE);
 
-    var window = g.glfwCreateWindow(800, 600, "LearnOpenGL", null, null);
+    const window = g.glfwCreateWindow(800, 600, "LearnOpenGL", null, null);
     if (window == null) {
         debug("Failed to create GLFW window", .{});
         g.glfwTerminate();
