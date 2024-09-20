@@ -21,7 +21,7 @@ pub fn build(b: *std.Build) !void {
         .name = "z_test",
         // In this case the main source file is merely a path, however, in more\
         // complicated build scripts, this could be a generated file.
-        .root_source_file = b.path("src/main_mysql.zig"),
+        .root_source_file = b.path("src/main_curl.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -29,12 +29,12 @@ pub fn build(b: *std.Build) !void {
     exe.linkLibC();
     // exe.linkLibCpp();
     // linkFFMPEG(exe);
-    linkMysql(exe);
+    // linkMysql(exe);
     // linkRedis(exe);
     // linkStaticLib(exe);
     // linkMongo(exe);
     // linkZip(exe);
-    // linkCurl(exe);
+    linkCurl(exe, b);
     // linkGlfw(exe);
 
     // This declares intent for the executable to be installed into the
@@ -183,22 +183,22 @@ fn linkZip(exe: *std.Build.Step.Compile) void {
 /// 在上面链接的下载页下载编译好的lib
 /// 注意：这里需要libcurl-x64.dll(下载的bin目录下)在根目录，看起来某个静态库链接了这个动态库(知道这个关系通过dumpbin /dependents [此项目编译后文件exe]或者ldd)
 /// 看起来上面的都不需要增加addLibraryPath，而静态链接库只能放在项目目录下，动态链接库只能放在项目根目录下或环境变量path中
-fn linkCurl(exe: *std.Build.Step.Compile) void {
+fn linkCurl(exe: *std.Build.Step.Compile, b: *std.Build) void {
     exe.addSystemIncludePath(.{
-        .path = "D:\\space\\scode\\lib_curl-mingw\\include",
+        .cwd_relative = "D:\\space\\scode\\curl-8.8.0\\include",
     });
-    exe.addObjectFile(.{ .path = "curl_lib/libbrotlicommon.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libbrotlidec.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libcrypto.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libcurl.dll.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libnghttp2.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libnghttp3.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libngtcp2.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libngtcp2_crypto_quictls.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libssh2.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libssl.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libz.a" });
-    exe.addObjectFile(.{ .path = "curl_lib/libzstd.a" });
+    exe.addObjectFile(b.path("curl_lib/libbrotlicommon.a"));
+    exe.addObjectFile(b.path("curl_lib/libbrotlidec.a"));
+    exe.addObjectFile(b.path("curl_lib/libcrypto.a"));
+    exe.addObjectFile(b.path("curl_lib/libcurl.dll.a"));
+    exe.addObjectFile(b.path("curl_lib/libnghttp2.a"));
+    exe.addObjectFile(b.path("curl_lib/libnghttp3.a"));
+    exe.addObjectFile(b.path("curl_lib/libngtcp2.a"));
+    exe.addObjectFile(b.path("curl_lib/libngtcp2_crypto_quictls.a"));
+    exe.addObjectFile(b.path("curl_lib/libssh2.a"));
+    exe.addObjectFile(b.path("curl_lib/libssl.a"));
+    exe.addObjectFile(b.path("curl_lib/libz.a"));
+    exe.addObjectFile(b.path("curl_lib/libzstd.a"));
 }
 
 /// 使用zig调用时g.gladLoadGLLoader(&g.glfwGetProcAddress)总是返回非0，使用c调用这个再供zig调用也是

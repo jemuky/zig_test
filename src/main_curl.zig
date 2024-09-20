@@ -6,6 +6,7 @@ const err = std.log.err;
 const alloc = std.heap.page_allocator;
 
 const c = @cImport({
+    @cDefine("MIDL_INTERFACE", "struct");
     @cInclude("curl/curl.h");
 });
 
